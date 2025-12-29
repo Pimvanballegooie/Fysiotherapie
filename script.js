@@ -1,5 +1,3 @@
-// script.js
-
 // 8 hoofdcategorieën: kleur is exact gelijk voor hoofdcategorie en alle subcategorieën
 const CATEGORIES = [
   { key: "kinderen", name: "Kinderen", color: "#2FA4B5", subs: ["Kinderfysiotherapie", "Pubers", "Schroth"] },
@@ -65,7 +63,7 @@ function categoryDot(color){
   return `<span class="tag__dot" style="background:${color}"></span>`;
 }
 
-// Navigation
+/* Nav */
 function initNav(){
   $$(".nav__btn[data-scroll]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -75,7 +73,7 @@ function initNav(){
   });
 }
 
-// Render: chips
+/* Render: chips */
 function renderCategoryChips(){
   const host = $("#categories");
   if(!host) return;
@@ -95,8 +93,7 @@ function renderCategoryChips(){
   host.addEventListener("click", (e) => {
     const chip = e.target.closest("[data-filter]");
     if(!chip) return;
-    const key = chip.getAttribute("data-filter");
-    setCategoryFilter(key);
+    setCategoryFilter(chip.getAttribute("data-filter"));
     scrollToId("#map");
   });
 
@@ -104,13 +101,12 @@ function renderCategoryChips(){
     if(e.key !== "Enter" && e.key !== " ") return;
     const chip = e.target.closest("[data-filter]");
     if(!chip) return;
-    const key = chip.getAttribute("data-filter");
-    setCategoryFilter(key);
+    setCategoryFilter(chip.getAttribute("data-filter"));
     scrollToId("#map");
   });
 }
 
-// Render: category cards
+/* Render: category cards */
 function renderCategoryCards(){
   const host = $("#categoryCards");
   if(!host) return;
@@ -121,9 +117,7 @@ function renderCategoryCards(){
         <span class="cat-card__dot" style="background:${cat.color}" aria-hidden="true"></span>
         <span>${escapeHtml(cat.name)}</span>
       </div>
-      <p class="cat-card__text">
-        ${escapeHtml(cat.subs.join(" · "))}
-      </p>
+      <p class="cat-card__text">${escapeHtml(cat.subs.join(" · "))}</p>
       <div class="cat-card__btnrow">
         <button class="btn" type="button" data-filter="${escapeHtml(cat.key)}">Toon locaties</button>
       </div>
@@ -143,13 +137,12 @@ function renderCategoryCards(){
     if(e.key !== "Enter" && e.key !== " ") return;
     const card = e.target.closest(".cat-card");
     if(!card) return;
-    const key = card.getAttribute("data-cat");
-    setCategoryFilter(key);
+    setCategoryFilter(card.getAttribute("data-cat"));
     scrollToId("#map");
   });
 }
 
-// Map + list
+/* Map + list */
 let map;
 let markersLayer;
 
@@ -158,6 +151,7 @@ function initMap(){
   if(!el || typeof L === "undefined") return;
 
   map = L.map("leafletMap", { scrollWheelZoom: false });
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap-bijdragers"
   }).addTo(map);
