@@ -25,18 +25,24 @@
       <nav class="nav" aria-label="Hoofdnavigatie">
         <button class="nav__btn" data-scroll="#home" type="button">Home</button>
         <button class="nav__btn" data-scroll="#map" type="button">Map</button>
-        <button class="nav__btn nav__btn--primary" data-scroll="#locatie-worden" type="button">Locatie worden</button>
+        <button class="nav__btn nav__btn--primary" data-scroll="#locatie-worden" type="button">
+          Locatie worden
+        </button>
       </nav>
     </div>
   </header>
 
   <main id="home">
+
+    <!-- HERO -->
     <section class="hero">
       <div class="container hero__inner">
+
         <div class="hero__content">
           <h1>De juiste fysiotherapeut, voor jouw klacht</h1>
           <p class="lead">
-            Iedere klacht vraagt om een andere fysiotherapeut. Met Vind je Fysio vind je eenvoudig de specialist die bij jou past!
+            Iedere klacht vraagt om een andere fysiotherapeut.
+            Met Vind je Fysio vind je eenvoudig de specialist die bij jou past!
           </p>
 
           <div class="hero__actions">
@@ -46,15 +52,19 @@
         </div>
 
         <div class="how-works-media" aria-label="Zo werkt het">
-  <img
-    src="./Zowerkthet.svg"
-    alt="Zo werkt het: 1 Kies je klacht en/of specialisatie. 2 Kies je locatie. 3 Vind je fysio."
-    class="how-works-media__img"
-    loading="lazy"
-    decoding="async"
-  />
-</div>
+          <img
+            src="./Zowerkthet.svg"
+            alt="Zo werkt het: 1 Kies je klacht en/of specialisatie. 2 Kies je locatie. 3 Vind je fysio."
+            class="how-works-media__img"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
+      </div>
+    </section>
+
+    <!-- CATEGORISEREN -->
     <section id="categoriseren" class="section">
       <div class="container">
         <h2>Werkwijze van categoriseren</h2>
@@ -63,42 +73,51 @@
           <article class="card">
             <h3>Hoe</h3>
             <p>
-              We gebruiken 8 hoofdcategorieën. Binnen elke hoofdcategorie staan subcategorieën die het
-              zorgdomein verduidelijken. Combineren kan. Zoek je een kinderfysio gespecialiseerd in schouderklachten?
-              Selecteer "Kinderfysio" en "Schouder"
-            </p>
-            <p class="muted">
+              We gebruiken 8 hoofdcategorieën. Binnen elke hoofdcategorie staan subcategorieën
+              die het zorgdomein verduidelijken. Combineren kan.
+              Zoek je een kinderfysio gespecialiseerd in schouderklachten?
+              Selecteer "Kinderfysio" en "Schouder".
             </p>
           </article>
 
           <article class="card">
             <h3>Waarom</h3>
             <p>
-              Binnen fysiotherapie bestaan veel disciplines, specialisaties, netwerken en regionale variaties.
-              Zonder duidelijke structuur raakt het overzicht kwijt. Deze indeling maakt zorg vindbaar,
-              herkenbaar en consistent
+              Binnen fysiotherapie bestaan veel disciplines, specialisaties, netwerken
+              en regionale variaties. Zonder duidelijke structuur raakt het overzicht kwijt.
+              Deze indeling maakt zorg vindbaar, herkenbaar en consistent.
             </p>
           </article>
         </div>
       </div>
     </section>
 
+    <!-- MAP -->
     <section id="map" class="section">
       <div class="container">
+
         <div class="map-head">
           <div>
             <h2>Vind een gespecialiseerde fysiotherapeut</h2>
             <p class="muted">
-              Zoek op naam/plaats én combineer hoofdcategorieën en subcategorieën. Resultaten moeten alle selecties matchen.
+              Zoek op naam of plaats en combineer hoofdcategorieën en subcategorieën.
+              Resultaten moeten alle selecties matchen.
             </p>
           </div>
         </div>
 
         <div class="filters card">
           <div class="filters__row">
+
             <div class="filters__field">
               <label class="label" for="searchInput">Zoeken</label>
-              <input id="searchInput" class="input" type="search" placeholder="Zoek op praktijk, plaats of therapeut…" autocomplete="off" />
+              <input
+                id="searchInput"
+                class="input"
+                type="search"
+                placeholder="Zoek op praktijk, plaats of therapeut…"
+                autocomplete="off"
+              />
             </div>
 
             <div class="filters__field">
@@ -107,12 +126,18 @@
                 <button id="clearBtn" class="btn btn--ghost" type="button">Wissen</button>
               </div>
               <div class="muted small">
-                Tip: kies eerst een hoofdcategorie, daarna subcategorieën (mag ook uit meerdere hoofdcategorieën).
+                Tip: kies eerst een hoofdcategorie, daarna subcategorieën
+                (mag ook uit meerdere hoofdcategorieën).
               </div>
             </div>
+
           </div>
 
-          <div class="filters__grid" id="filtersGrid" aria-label="Filter op categorieën en subcategorieën"></div>
+          <div
+            class="filters__grid"
+            id="filtersGrid"
+            aria-label="Filter op categorieën en subcategorieën"
+          ></div>
 
           <div class="selected" aria-label="Geselecteerde filters">
             <div class="selected__head">
@@ -129,14 +154,16 @@
           <aside class="list" aria-label="Deelnemende locaties en therapeuten">
             <div class="list__head">
               <h3>Locaties</h3>
-              <span id="resultCount" class="badge" aria-label="Aantal resultaten">0</span>
+              <span id="resultCount" class="badge">0</span>
             </div>
             <div id="locationList" class="list__items" aria-live="polite"></div>
           </aside>
         </div>
+
       </div>
     </section>
 
+    <!-- LOCATIE WORDEN -->
     <section id="locatie-worden" class="section section--alt">
       <div class="container">
         <h2>Locatie worden</h2>
@@ -145,9 +172,9 @@
           <article class="card">
             <h3>Voor wie</h3>
             <ul class="clean">
-              <li>Praktijken die willen aansluiten bij de categorisering en zichtbaar willen zijn op de kaart</li>
+              <li>Praktijken die willen aansluiten bij de categorisering</li>
               <li>Teams met aantoonbare expertise in één of meerdere categorieën</li>
-              <li>Bereidheid om gegevens actueel te houden (contact, openingstijden, aanbod)</li>
+              <li>Bereidheid om gegevens actueel te houden</li>
             </ul>
           </article>
 
@@ -155,8 +182,8 @@
             <h3>Wat we nodig hebben</h3>
             <ul class="clean">
               <li>Praktijknaam, adres, plaats, website en contactpersoon</li>
-              <li>Selectie van categorieën/subcategorieën waarin jullie expertise bieden</li>
-              <li>Contactgegevens per locatie en (later) per therapeut</li>
+              <li>Selectie van categorieën en subcategorieën</li>
+              <li>Contactgegevens per locatie en later per therapeut</li>
             </ul>
           </article>
         </div>
@@ -165,17 +192,25 @@
           <h3>Aanmeldproces</h3>
           <ol class="steps">
             <li>Stuur jullie gegevens en gewenste categorieën</li>
-            <li>Wij checken of de indeling klopt en voegen de locatie toe</li>
-            <li>Na publicatie ontvangen jullie instructie om gegevens up-to-date te houden</li>
+            <li>Wij checken de indeling en voegen de locatie toe</li>
+            <li>Na publicatie ontvangen jullie instructies voor beheer</li>
           </ol>
 
           <div class="cta">
-            <p class="muted">Vervang het mailadres hieronder door jullie definitieve contactroute.</p>
-            <a class="btn" href="mailto:info@jouwdomein.nl?subject=Aanmelden%20als%20locatie">Aanmelden als locatie</a>
+            <p class="muted">
+              Vervang het mailadres hieronder door jullie definitieve contactroute.
+            </p>
+            <a
+              class="btn"
+              href="mailto:info@jouwdomein.nl?subject=Aanmelden%20als%20locatie"
+            >
+              Aanmelden als locatie
+            </a>
           </div>
         </article>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
