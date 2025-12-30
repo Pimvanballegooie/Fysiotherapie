@@ -1,7 +1,6 @@
-// Categorieën (hoofdcategorie + subcategorie)
-// Kleur: exact gelijk voor hoofd en sub
-// Letter: per subcategorie bedoeld voor marker-badges (zoals EnkelVoetNetwerk-stijl)
-
+// =============================
+// 1) Categorieën + subcategorieën
+// =============================
 const CATEGORIES = [
   {
     key: "kinderen",
@@ -125,49 +124,78 @@ const CATEGORIES = [
   }
 ];
 
-// Helpers: tag keys
-function mainTag(mainKey) {
-  return `main:${mainKey}`;
-}
-function subTag(mainKey, subKey) {
-  return `sub:${mainKey}/${subKey}`;
-}
+function mainTag(mainKey) { return `main:${mainKey}`; }
+function subTag(mainKey, subKey) { return `sub:${mainKey}/${subKey}`; }
 
-// Voorbeeld locaties (pas aan naar echte data)
-// Belangrijk: voeg tags toe op subniveau (sub:...) en/of hoofd (main:...) indien gewenst.
-// Aanrader: voeg altijd sub-tags toe; hoofd-tags kunnen automatisch afgeleid worden uit subs.
+// =============================
+// 2) Locaties met therapeuten (NIEUW MODEL)
+// =============================
 const LOCATIONS = [
   {
     id: "mzb-belcrum",
+    org: "Monné Zorg & Beweging",
     name: "Monné Zorg & Beweging – Belcrum",
     address: "Industriekade 10",
     city: "Breda",
     website: "https://www.monne.nl/",
     lat: 51.5909,
     lng: 4.7793,
-    tags: [
-      subTag("wervelkolom", "lage-rug-bekken"),   // L
-      subTag("benen", "knie-onderbeen"),          // K
-      subTag("benen", "enkel-voet")
+    therapists: [
+      {
+        id: "pim",
+        name: "Pim van Ballegooie",
+        tags: [
+          subTag("benen", "knie-onderbeen"),
+          subTag("wervelkolom", "lage-rug-bekken"),
+          subTag("expertises", "echo")
+        ]
+      },
+      {
+        id: "pjotr",
+        name: "Pjotr Goossens",
+        tags: [
+          subTag("armen", "schouder-bovenarm"),
+          subTag("expertises", "dry-needling"),
+          subTag("wervelkolom", "hoofd-nek")
+        ]
+      },
+      {
+        id: "joost",
+        name: "Joost van Broekhoven",
+        tags: [
+          subTag("geriatrie", "valpreventie"),
+          subTag("chronische-zorg", "chron-pijn"),
+          subTag("benen", "enkel-voet")
+        ]
+      }
     ]
   },
   {
     id: "mzb-oosterhout",
+    org: "Monné Zorg & Beweging",
     name: "Monné Zorg & Beweging – Oosterhout",
     address: "Merijntje Gijzenstraat 3e",
     city: "Oosterhout",
     website: "https://www.monne.nl/",
     lat: 51.6448,
     lng: 4.8573,
-    tags: [
-      subTag("benen", "knie-onderbeen"),
-      subTag("geriatrie", "valpreventie"),
-      subTag("chronische-zorg", "long")
+    therapists: [
+      {
+        id: "joeri",
+        name: "Joeri van Dongen",
+        tags: [
+          subTag("benen", "heup-bovenbeen"),
+          subTag("geriatrie", "parkinson"),
+          subTag("expertises", "manueel")
+        ]
+      }
     ]
   }
 ];
 
-// Utility DOM
+// =============================
+// 3) Utilities
+// =============================
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
@@ -201,22 +229,44 @@ function getSub(mainKey, subKey){
   return m?.subs?.find(s => s.key === subKey);
 }
 
-// Selected filters state
+function tagToMeta(tag){
+  // returns {mainKey, subKey, color, letter, label}
+  if(tag.startsWith("sub:")){
+    const raw = tag.replace("sub:", "");
+    const [mainKey, subKey] = raw.split("/");
+    const m = getMain(mainKey);
+    const s = getSub(mainKey, subKey);
+    if(!m || !s) return null;
+    return { mainKey, subKey, color: m.color, letter: s.letter, label: `${m.name}: ${s.name}` };
+  }
+  if(tag.startsWith("main:")){
+    const mainKey = tag.replace("main:", "");
+    const m = getMain(mainKey);
+    if(!m) return null;
+    return { mainKey, subKey: null, color: m.color, letter: m.letter, label: m.name };
+  }
+  return null;
+}
+
+// =============================
+// 4) State (filters)
+// =============================
 const state = {
   q: "",
-  selectedMain: new Set(), // main:... tags (not required if subs selected, but allowed)
-  selectedSubs: new Set()  // sub:main/sub tags
+  selectedMain: new Set(),
+  selectedSubs: new Set()
 };
 
 function selectedAllTags(){
-  // AND logic: everything selected must be present
-  const tags = [];
-  state.selectedMain.forEach(t => tags.push(t));
-  state.selectedSubs.forEach(t => tags.push(t));
-  return tags;
+  const out = [];
+  state.selectedMain.forEach(t => out.push(t));
+  state.selectedSubs.forEach(t => out.push(t));
+  return out;
 }
 
-// Build filters UI
+// =============================
+// 5) Filters UI (zelfde als eerder)
+// =============================
 function renderFilters(){
   const host = $("#filtersGrid");
   if(!host) return;
@@ -290,7 +340,6 @@ function onFilterChange(e){
     if(input.checked) state.selectedMain.add(t);
     else state.selectedMain.delete(t);
 
-    // open/close subs
     const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
     if(subs){
       const shouldOpen = input.checked || Array.from(state.selectedSubs).some(x => x.startsWith(`sub:${mainKey}/`));
@@ -305,7 +354,6 @@ function onFilterChange(e){
     if(input.checked) state.selectedSubs.add(t);
     else state.selectedSubs.delete(t);
 
-    // if any sub selected, keep subs open
     const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
     if(subs){
       const mainChecked = state.selectedMain.has(mainTag(mainKey));
@@ -318,7 +366,6 @@ function onFilterChange(e){
   renderMapAndList();
 }
 
-// Selected chips UI
 function renderSelectedChips(){
   const host = $("#selectedChips");
   const count = $("#selectedCount");
@@ -326,42 +373,25 @@ function renderSelectedChips(){
 
   const chips = [];
 
-  // Main chips
   for(const t of state.selectedMain){
-    const mainKey = t.replace("main:", "");
-    const m = getMain(mainKey);
-    if(!m) continue;
-    chips.push({
-      key: t,
-      label: m.name,
-      color: m.color
-    });
+    const meta = tagToMeta(t);
+    if(meta) chips.push({ key: t, label: meta.label, color: meta.color });
   }
-
-  // Sub chips
   for(const t of state.selectedSubs){
-    const raw = t.replace("sub:", ""); // main/sub
-    const [mainKey, subKey] = raw.split("/");
-    const m = getMain(mainKey);
-    const s = getSub(mainKey, subKey);
-    if(!m || !s) continue;
-    chips.push({
-      key: t,
-      label: `${m.name}: ${s.name}`,
-      color: m.color
-    });
+    const meta = tagToMeta(t);
+    if(meta) chips.push({ key: t, label: meta.label, color: meta.color });
   }
 
   count.textContent = String(chips.length);
 
   host.innerHTML = chips.length
     ? chips.map(c => `
-        <span class="chip">
-          <span class="dot" style="background:${c.color}"></span>
-          ${escapeHtml(c.label)}
-          <button type="button" data-remove="${escapeHtml(c.key)}" aria-label="Verwijderen">×</button>
-        </span>
-      `).join("")
+      <span class="chip">
+        <span class="dot" style="background:${c.color}"></span>
+        ${escapeHtml(c.label)}
+        <button type="button" data-remove="${escapeHtml(c.key)}" aria-label="Verwijderen">×</button>
+      </span>
+    `).join("")
     : `<span class="muted small">Nog geen selectie gemaakt.</span>`;
 
   host.querySelectorAll("[data-remove]").forEach(btn => {
@@ -370,8 +400,6 @@ function renderSelectedChips(){
       if(!key) return;
       if(key.startsWith("main:")) state.selectedMain.delete(key);
       if(key.startsWith("sub:")) state.selectedSubs.delete(key);
-
-      // re-render filter checkboxes to match state
       renderFilters();
       renderSelectedChips();
       renderMapAndList();
@@ -379,7 +407,6 @@ function renderSelectedChips(){
   });
 }
 
-// Search
 function initSearch(){
   const input = $("#searchInput");
   const clearBtn = $("#clearBtn");
@@ -404,99 +431,105 @@ function initSearch(){
   }
 }
 
-// Filtering logic
-function deriveMainKeysFromTags(tags){
-  const set = new Set();
-  tags.forEach(t => {
-    if(t.startsWith("sub:")){
-      const raw = t.replace("sub:", "");
-      const mainKey = raw.split("/")[0];
-      set.add(mainKey);
+// =============================
+// 6) Filtering op THERAPEUT niveau
+// =============================
+function therapistMatches(therapist, requiredTags){
+  const ttags = new Set(therapist.tags || []);
+  for(const req of requiredTags){
+    if(req.startsWith("main:")){
+      const mainKey = req.replace("main:", "");
+      const hasMain = ttags.has(req);
+      const hasAnySub = Array.from(ttags).some(x => x.startsWith(`sub:${mainKey}/`));
+      if(!(hasMain || hasAnySub)) return false;
+    } else {
+      if(!ttags.has(req)) return false;
     }
-    if(t.startsWith("main:")){
-      set.add(t.replace("main:", ""));
-    }
-  });
-  return set;
+  }
+  return true;
 }
 
-function filterLocations(){
-  const query = normalize(state.q);
+function locationTextMatches(loc, query){
+  if(!query) return true;
+  const q = normalize(query);
+  return (
+    normalize(loc.name).includes(q) ||
+    normalize(loc.city).includes(q) ||
+    normalize(loc.address).includes(q) ||
+    normalize(loc.org).includes(q)
+  );
+}
+
+function filterLocationsTherapistLevel(){
   const required = selectedAllTags(); // AND
+  const query = state.q;
 
-  return LOCATIONS.filter(loc => {
-    // Text match
-    const matchesQ =
-      !query ||
-      normalize(loc.name).includes(query) ||
-      normalize(loc.city).includes(query) ||
-      normalize(loc.address).includes(query);
+  const results = [];
 
-    if(!matchesQ) return false;
+  for(const loc of LOCATIONS){
+    if(!locationTextMatches(loc, query)) continue;
 
-    // Tag match (AND)
-    if(required.length){
-      const locTags = new Set(loc.tags || []);
+    const matches = [];
+    for(const th of (loc.therapists || [])){
+      // ook op therapeutnaam zoeken
+      const thNameMatch = !query || normalize(th.name).includes(normalize(query));
+      if(!thNameMatch && query) {
+        // als de query niet in therapienaam zit, maar wel in locatie, blijft hij nog mee doen
+        // en dan filteren we puur op tags; daarom géén continue
+      }
 
-      // main-tags: allow match by presence of any sub under that main if location has sub-tags only
-      for(const t of required){
-        if(t.startsWith("main:")){
-          const mainKey = t.replace("main:", "");
-          const hasMainDirect = locTags.has(t);
-          const hasAnySubOfMain = Array.from(locTags).some(x => x.startsWith(`sub:${mainKey}/`));
-          if(!(hasMainDirect || hasAnySubOfMain)) return false;
-        } else {
-          if(!locTags.has(t)) return false;
-        }
+      if(required.length){
+        if(therapistMatches(th, required)) matches.push(th);
+      } else {
+        // geen selectie: toon alle therapeuten (of je kunt hier beperken)
+        matches.push(th);
       }
     }
 
-    return true;
-  });
+    if(matches.length){
+      results.push({ location: loc, therapists: matches });
+    }
+  }
+
+  return results;
 }
 
-// Marker letters: show letters for selected filters (subs first; if only mains selected then show main letters)
+// Letters op marker: letters van geselecteerde subfilters (zoals eerder), anders max 2 letters uit eerste matchende therapeuten
 function getSelectedLettersForMarker(){
   const letters = [];
 
   if(state.selectedSubs.size){
     for(const t of state.selectedSubs){
-      const raw = t.replace("sub:", "");
-      const [mainKey, subKey] = raw.split("/");
-      const m = getMain(mainKey);
-      const s = getSub(mainKey, subKey);
-      if(m && s){
-        letters.push({ letter: s.letter, color: m.color });
-      }
+      const meta = tagToMeta(t);
+      if(meta) letters.push({ letter: meta.letter, color: meta.color });
     }
   } else if(state.selectedMain.size){
     for(const t of state.selectedMain){
-      const mainKey = t.replace("main:", "");
-      const m = getMain(mainKey);
-      if(m){
-        letters.push({ letter: m.letter, color: m.color });
-      }
+      const meta = tagToMeta(t);
+      if(meta) letters.push({ letter: meta.letter, color: meta.color });
     }
   }
-
-  // cap to max 3 to keep marker readable (je kunt dit verhogen)
   return letters.slice(0, 3);
 }
 
-function lettersForLocationIfNoSelection(loc){
-  // If nothing selected, show up to 2 letters based on first two sub-tags the location has
-  const tags = (loc.tags || []).filter(t => t.startsWith("sub:")).slice(0, 2);
-  return tags.map(t => {
-    const raw = t.replace("sub:", "");
-    const [mainKey, subKey] = raw.split("/");
-    const m = getMain(mainKey);
-    const s = getSub(mainKey, subKey);
-    if(!m || !s) return null;
-    return { letter: s.letter, color: m.color };
-  }).filter(Boolean);
+function lettersFromTherapists(therapists){
+  // Pak max 2 sub-tags uit de eerste therapeut als fallback
+  const letters = [];
+  for(const th of therapists){
+    const subTags = (th.tags || []).filter(t => t.startsWith("sub:"));
+    for(const st of subTags){
+      const meta = tagToMeta(st);
+      if(meta) letters.push({ letter: meta.letter, color: meta.color });
+      if(letters.length >= 2) return letters;
+    }
+    if(letters.length >= 2) return letters;
+  }
+  return letters;
 }
 
-// Leaflet map
+// =============================
+// 7) Leaflet kaart
+// =============================
 let map;
 let markersLayer;
 
@@ -509,7 +542,7 @@ function createLetterIcon(letters){
   return L.divIcon({
     className: "",
     html,
-    iconSize: [1, 1], // Leaflet uses the HTML size; keep tiny
+    iconSize: [1, 1],
     iconAnchor: [18, 18]
   });
 }
@@ -530,59 +563,97 @@ function initMap(){
   renderMapAndList();
 }
 
-function makePopup(loc){
-  const mainKeys = Array.from(deriveMainKeysFromTags(loc.tags || []));
-  const chips = mainKeys
-    .map(k => getMain(k))
+function therapistLettersHtml(therapist){
+  const metas = (therapist.tags || [])
+    .filter(t => t.startsWith("sub:"))
+    .map(tagToMeta)
     .filter(Boolean)
-    .map(m => `<span class="chip"><span class="dot" style="background:${m.color}"></span>${escapeHtml(m.name)}</span>`)
-    .join("");
+    .slice(0, 6);
+
+  return metas.map(m =>
+    `<span class="letter-pill" style="background:${m.color}">${escapeHtml(m.letter)}</span>`
+  ).join("");
+}
+
+function makePopup(loc, matchedTherapists){
+  const people = matchedTherapists.map(th => `
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(15,23,42,.10);">
+      <strong>${escapeHtml(th.name)}</strong>
+      <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+        ${therapistLettersHtml(th)}
+      </div>
+    </div>
+  `).join("");
 
   const website = loc.website
-    ? `<div style="margin-top:10px;"><a href="${escapeHtml(loc.website)}" target="_blank" rel="noopener">Website</a></div>`
+    ? `<div style="margin-top:12px;"><a href="${escapeHtml(loc.website)}" target="_blank" rel="noopener">Website</a></div>`
     : "";
 
   return `
-    <div style="min-width:240px;">
+    <div style="min-width:260px;">
       <strong>${escapeHtml(loc.name)}</strong><br/>
       <span>${escapeHtml(loc.address)}, ${escapeHtml(loc.city)}</span>
-      <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">${chips}</div>
+      ${people}
       ${website}
     </div>
   `;
 }
 
-function renderMarkers(filtered){
+function renderMarkers(results){
   if(!markersLayer) return;
   markersLayer.clearLayers();
 
   const bounds = [];
   const selectedLetters = getSelectedLettersForMarker();
 
-  filtered.forEach(loc => {
-    const letters = selectedLetters.length ? selectedLetters : lettersForLocationIfNoSelection(loc);
+  for(const r of results){
+    const loc = r.location;
+    const letters = selectedLetters.length ? selectedLetters : lettersFromTherapists(r.therapists);
+
     const marker = L.marker([loc.lat, loc.lng], { icon: createLetterIcon(letters) }).addTo(markersLayer);
-    marker.bindPopup(makePopup(loc));
+    marker.bindPopup(makePopup(loc, r.therapists));
+
     bounds.push([loc.lat, loc.lng]);
-  });
+  }
 
   if(bounds.length && map){
     map.fitBounds(bounds, { padding: [30, 30] });
   }
 }
 
-function renderList(filtered){
+// =============================
+// 8) Sidebar lijst: locatie + matchende therapeuten
+// =============================
+function renderList(results){
   const host = $("#locationList");
   const count = $("#resultCount");
   if(!host || !count) return;
 
-  count.textContent = String(filtered.length);
+  count.textContent = String(results.length);
 
   const selectedLetters = getSelectedLettersForMarker();
 
-  host.innerHTML = filtered.map(loc => {
-    const letters = selectedLetters.length ? selectedLetters : lettersForLocationIfNoSelection(loc);
-    const letterHtml = letters.map(l => `<span class="letter-pill" style="background:${l.color}">${escapeHtml(l.letter)}</span>`).join("");
+  host.innerHTML = results.map(r => {
+    const loc = r.location;
+
+    const therapistRows = r.therapists.map(th => {
+      const letters = selectedLetters.length
+        ? selectedLetters
+        : lettersFromTherapists([th]);
+
+      const letterHtml = letters.map(l =>
+        `<span class="letter-pill" style="background:${l.color}">${escapeHtml(l.letter)}</span>`
+      ).join("");
+
+      return `
+        <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(15,23,42,.10);">
+          <div style="display:flex; justify-content:space-between; gap:10px;">
+            <strong>${escapeHtml(th.name)}</strong>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">${letterHtml}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
 
     const website = loc.website
       ? `<a class="btn btn--ghost" href="${escapeHtml(loc.website)}" target="_blank" rel="noopener">Website</a>`
@@ -594,12 +665,13 @@ function renderList(filtered){
           <div>
             <p class="item__name">${escapeHtml(loc.name)}</p>
             <p class="item__meta">${escapeHtml(loc.address)}, ${escapeHtml(loc.city)}</p>
-            <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">${letterHtml}</div>
           </div>
           <button class="btn btn--ghost" type="button" data-zoom="${escapeHtml(loc.id)}">Zoom</button>
         </div>
 
-        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        ${therapistRows}
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
           ${website}
         </div>
       </div>
@@ -616,13 +688,9 @@ function renderList(filtered){
   });
 }
 
-function renderMapAndList(){
-  const filtered = filterLocations();
-  renderList(filtered);
-  if(map) renderMarkers(filtered);
-}
-
-// Navigation
+// =============================
+// 9) Nav + render
+// =============================
 function initNav(){
   $$(".nav__btn[data-scroll]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -630,6 +698,12 @@ function initNav(){
       if(target) scrollToId(target);
     });
   });
+}
+
+function renderMapAndList(){
+  const results = filterLocationsTherapistLevel();
+  renderList(results);
+  if(map) renderMarkers(results);
 }
 
 function init(){
