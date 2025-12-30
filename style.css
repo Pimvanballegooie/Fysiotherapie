@@ -744,3 +744,48 @@ h3{ margin: 0 0 10px; font-size: 18px; }
   margin: 0 auto;
 }
 
+/* ===== Mobile nav: nooit buiten beeld ===== */
+@media (max-width: 520px){
+  .topbar__inner{
+    height: auto;               /* laat hoogte meegroeien */
+    padding: 10px 0;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .brand{
+    min-width: 0;               /* laat logo ruimte afstaan */
+  }
+
+  .nav{
+    flex-wrap: wrap;            /* <<< belangrijk */
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .nav__btn{
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+}
+/* ===== Mobile map fix: altijd hoogte + goede stack ===== */
+@media (max-width: 980px){
+  .map-layout{ grid-template-columns: 1fr; }
+  .map-canvas{
+    height: 380px !important;
+    min-height: 380px;
+  }
+  .list{
+    min-height: auto;
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 520px){
+  .map-canvas{
+    height: 320px !important;
+    min-height: 320px;
+  }
+}
+
