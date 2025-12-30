@@ -715,4 +715,32 @@ h3{ margin: 0 0 10px; font-size: 18px; }
   max-width: 100%;
   border-radius: 14px;
 }
+/* =========================
+   Zo werkt het – compact maken
+========================= */
+
+.how-works-media{
+  border-radius: 20px;
+  border: 1px solid rgba(31,78,121,.20);
+  background: linear-gradient(135deg, #f8fafc, #eef4fa);
+  box-shadow: var(--shadow);
+
+  /* NIEUW */
+  padding: 14px;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* SVG netjes schalen */
+.how-works-media__img{
+  display: block;
+  width: 100%;
+  height: auto;
+
+  /* BELANGRIJK */
+  max-height: 280px;   /* <<< hier regel je de hoogte */
+  object-fit: contain;
+  margin: 0 auto;
+}
 
