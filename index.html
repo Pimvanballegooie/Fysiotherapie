@@ -45,35 +45,57 @@
           </div>
         </div>
 
-        <div class="how-works how-works--highlight">
-          <h2 class="how-works__title">Zo werkt het</h2>
+        <div class="how-fancy">
+  <div class="how-fancy__header">
+    <h2>Zo werkt het</h2>
 
-          <div class="how-works__steps">
-            <div class="how-step">
-              <div class="how-step__number">1</div>
-              <div class="how-step__text">
-                Kies je klacht<br>
-                <span>en/of specialisatie</span>
-              </div>
-            </div>
+    <!-- Gebogen pijl -->
+    <svg class="how-arrow" viewBox="0 0 220 120" fill="none" aria-hidden="true">
+      <path
+        d="M10 20 C120 20, 120 100, 210 100"
+        stroke="url(#arrowGradient)"
+        stroke-width="4"
+        fill="none"
+        stroke-linecap="round"
+      />
+      <polygon
+        points="200,92 210,100 198,104"
+        fill="#1F4E79"
+      />
+      <defs>
+        <linearGradient id="arrowGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#1F4E79"/>
+          <stop offset="100%" stop-color="#4CAF50"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
 
-            <div class="how-step">
-              <div class="how-step__number">2</div>
-              <div class="how-step__text">
-                Kies je locatie
-              </div>
-            </div>
-
-            <div class="how-step">
-              <div class="how-step__number">3</div>
-              <div class="how-step__text how-step__text--strong">
-                Vind je fysio
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="how-fancy__steps">
+    <div class="how-card">
+      <div class="how-circle">1</div>
+      <div class="how-text">
+        Kies je klacht
+        <span>en/of specialisatie</span>
       </div>
-    </section>
+    </div>
+
+    <div class="how-card">
+      <div class="how-circle">2</div>
+      <div class="how-text">
+        Kies je locatie
+      </div>
+    </div>
+
+    <div class="how-card how-card--highlight">
+      <div class="how-circle">3</div>
+      <div class="how-text">
+        Vind je fysio
+      </div>
+    </div>
+  </div>
+</div>
+
 
     <section id="categoriseren" class="section">
       <div class="container">
