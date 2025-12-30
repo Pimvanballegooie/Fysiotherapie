@@ -3,22 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fysio vind je – Therapeutische zorg</title>
-  <meta name="description" content="Overkoepelend overzicht van categorieën therapeutische zorg en deelnemende locaties." />
+  <title>Vind je fysio – Therapeutische zorg</title>
+  <meta name="description" content="Vind eenvoudig de gespecialiseerde fysiotherapeut voor jouw klachten." />
 
   <link rel="stylesheet" href="./style.css" />
-
-  <!-- Leaflet (kaart) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
 <body>
   <header class="topbar">
     <div class="container topbar__inner">
-      <a class="brand" href="#home" aria-label="Fysio vind je">
+      <a class="brand" href="#home" aria-label="Vind je fysio">
         <img
           src="./Logo-vindjefysio.svg"
-          alt="Fysio vind je"
+          alt="Vind je fysio"
           class="brand__logo"
           decoding="async"
         />
@@ -48,13 +46,13 @@
           </div>
         </div>
 
-        <div class="hero__panel" role="note" aria-label="Kernpunten">
+        <div class="hero__panel" role="note" aria-label="Zo werkt het">
           <h2 class="panel__title">Zo werkt het</h2>
           <ul class="panel__list">
             <li>Kies één of meerdere hoofdcategorieën</li>
-            <li>Selecteer daarna subcategorieën (ook uit meerdere hoofdcategorieën)</li>
-            <li>Je krijgt locaties/therapeuten die alle selecties matchen</li>
-            <li>Op de kaart zie je letters van de gekozen specialisaties</li>
+            <li>Selecteer subcategorieën (ook uit meerdere hoofdcategorieën)</li>
+            <li>Resultaat toont locaties met de therapeuten die matchen</li>
+            <li>Op de kaart zie je letters van je selectie</li>
           </ul>
         </div>
       </div>
@@ -103,11 +101,11 @@
           <div class="filters__row">
             <div class="filters__field">
               <label class="label" for="searchInput">Zoeken</label>
-              <input id="searchInput" class="input" type="search" placeholder="Zoek op praktijk, plaats…" autocomplete="off" />
+              <input id="searchInput" class="input" type="search" placeholder="Zoek op praktijk, plaats of therapeut…" autocomplete="off" />
             </div>
 
             <div class="filters__field">
-              <label class="label">Selecties</label>
+              <label class="label">Acties</label>
               <div class="filters__actions">
                 <button id="clearBtn" class="btn btn--ghost" type="button">Wissen</button>
               </div>
@@ -117,9 +115,7 @@
             </div>
           </div>
 
-          <div class="filters__grid" id="filtersGrid" aria-label="Filter op categorieën en subcategorieën">
-            <!-- wordt gevuld door script.js -->
-          </div>
+          <div class="filters__grid" id="filtersGrid" aria-label="Filter op categorieën en subcategorieën"></div>
 
           <div class="selected" aria-label="Geselecteerde filters">
             <div class="selected__head">
@@ -133,7 +129,7 @@
         <div class="map-layout">
           <div id="leafletMap" class="map-canvas" aria-label="Kaart"></div>
 
-          <aside class="list" aria-label="Deelnemende locaties">
+          <aside class="list" aria-label="Deelnemende locaties en therapeuten">
             <div class="list__head">
               <h3>Locaties</h3>
               <span id="resultCount" class="badge" aria-label="Aantal resultaten">0</span>
@@ -163,7 +159,7 @@
             <ul class="clean">
               <li>Praktijknaam, adres, plaats, website en contactpersoon</li>
               <li>Selectie van categorieën/subcategorieën waarin jullie expertise bieden</li>
-              <li>Optioneel: relevante netwerken/certificeringen als tekst op de locatiekaart</li>
+              <li>Contactgegevens per locatie en (later) per therapeut</li>
             </ul>
           </article>
         </div>
@@ -187,7 +183,7 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <small class="muted">© <span id="year"></span> Fysio vind je</small>
+      <small class="muted">© <span id="year"></span> Vind je fysio</small>
       <small class="muted">Overkoepelend overzicht</small>
     </div>
   </footer>
