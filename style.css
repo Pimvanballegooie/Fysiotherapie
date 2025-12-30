@@ -63,6 +63,90 @@ button{ font: inherit; }
   width: auto;
   display: block;
 }
+/* =========================
+   Zo werkt het – blikvanger
+========================= */
+
+.how-works{
+  border-radius: var(--radius);
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(31,78,121,.08),
+    rgba(31,78,121,.02)
+  );
+  border: 1px solid rgba(31,78,121,.25);
+}
+
+.how-works__title{
+  margin: 0 0 18px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.how-works__steps{
+  display: grid;
+  gap: 16px;
+}
+
+.how-step{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.how-step__number{
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.how-step__text{
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.how-step__text span{
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.how-step__text--strong{
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* mobiel */
+@media (max-width: 520px){
+  .how-works{
+    padding: 18px;
+  }
+
+  .how-works__title{
+    font-size: 22px;
+  }
+
+  .how-step__number{
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .how-step__text{
+    font-size: 16px;
+  }
+}
 
 /* Nav */
 .nav{
