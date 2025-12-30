@@ -693,4 +693,26 @@ h3{ margin: 0 0 10px; font-size: 18px; }
     font-size: 16px;
   }
 }
+/* =========================
+   Zo werkt het – SVG versie
+========================= */
+
+.how-works-media{
+  border-radius: 20px;
+  border: 1px solid rgba(31,78,121,.20);
+  background: linear-gradient(135deg, #f8fafc, #eef4fa);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.how-works-media__img{
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  border-radius: 14px;
+}
 
