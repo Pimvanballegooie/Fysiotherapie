@@ -36,25 +36,25 @@
     <section class="hero">
       <div class="container hero__inner">
         <div class="hero__content">
-          <h1>Vind de beste fysio voor jouw klachten</h1>
+          <h1>De juiste fysiotherapeut, zonder zoeken</h1>
           <p class="lead">
-            Iedere klacht vraagt om een andere fysiotherapeut. Met Vind je fysio vind je eenvoudig de specialist die bij jou past.
+            Door de wirwar aan therapeuten, specialisaties en netwerken is het vaak lastig om de juiste fysiotherapeut te vinden.
+            Met Vind je fysio vind je snel de specialist die past bij jouw klachten.
           </p>
 
           <div class="hero__actions">
             <a class="btn" href="#categoriseren">Hoe we categoriseren</a>
-            <a class="btn btn--ghost" href="#categorieen">Categorieën</a>
-            <a class="btn btn--ghost" href="#map">Kaart</a>
+            <a class="btn btn--ghost" href="#map">Direct zoeken op kaart</a>
           </div>
         </div>
 
         <div class="hero__panel" role="note" aria-label="Kernpunten">
-          <h2 class="panel__title">Waarom deze aanpak</h2>
+          <h2 class="panel__title">Zo werkt het</h2>
           <ul class="panel__list">
-            <li>Eén overzicht voor cliënten en verwijzers</li>
-            <li>Vind dé fysiotherapeut met expertise</li>
-            <li>Minder versnippering in specialisaties en netwerken</li>
-            <li></li>
+            <li>Kies één of meerdere hoofdcategorieën</li>
+            <li>Selecteer daarna subcategorieën (ook uit meerdere hoofdcategorieën)</li>
+            <li>Je krijgt locaties/therapeuten die alle selecties matchen</li>
+            <li>Op de kaart zie je letters van de gekozen specialisaties</li>
           </ul>
         </div>
       </div>
@@ -68,8 +68,8 @@
           <article class="card">
             <h3>Hoe</h3>
             <p>
-              We gebruiken 8 hoofdcategorieën. Binnen elke hoofdcategorie staan subcategorieën die het
-              zorgdomein verduidelijken. Combineren kan! Ben je bijvoorbeeld op zoek naar een fysiotherapeut die is gespecialiseerd in schouders? Of een sportfysiotherapeut? Of een kinderfysiotherapeut die expert is in schouderklachten?
+              We gebruiken 8 hoofdcategorieën als vaste ingangen. Binnen elke hoofdcategorie staan subcategorieën die het
+              zorgdomein verduidelijken. Overlap is toegestaan: een zorgvraag kan via meerdere routes gevonden worden.
             </p>
             <p class="muted">
               Afspraak: hoofdcategorie en subcategorieën gebruiken exact dezelfde kleur (geen tinten of variaties).
@@ -85,26 +85,6 @@
             </p>
           </article>
         </div>
-
-        <article class="card card--flat">
-          <h3>Gekozen categorieën en subcategorieën</h3>
-          <p class="muted">
-            Hieronder staan de categorieën met subcategorieën. Klik op een categorie om locaties te filteren op de kaart.
-          </p>
-
-          <div id="categories" class="categories" aria-label="Categorieën overzicht"></div>
-        </article>
-      </div>
-    </section>
-
-    <section id="categorieen" class="section section--alt">
-      <div class="container">
-        <h2>Categorieën</h2>
-        <p class="muted">
-          Klik op een categorie om te filteren op locaties. Eventuele detailpagina’s kun je later per categorie toevoegen.
-        </p>
-
-        <div id="categoryCards" class="category-cards" aria-label="Categoriekaarten"></div>
       </div>
     </section>
 
@@ -112,20 +92,41 @@
       <div class="container">
         <div class="map-head">
           <div>
-            <h2>Kaart met deelnemende praktijken</h2>
-            <p class="muted">Zoek op praktijk, plaats of categorie. Klik op een pin voor details.</p>
+            <h2>Vind een gespecialiseerde fysiotherapeut</h2>
+            <p class="muted">
+              Zoek op naam/plaats én combineer hoofdcategorieën en subcategorieën. Resultaten moeten alle selecties matchen.
+            </p>
+          </div>
+        </div>
+
+        <div class="filters card">
+          <div class="filters__row">
+            <div class="filters__field">
+              <label class="label" for="searchInput">Zoeken</label>
+              <input id="searchInput" class="input" type="search" placeholder="Zoek op praktijk, plaats…" autocomplete="off" />
+            </div>
+
+            <div class="filters__field">
+              <label class="label">Selecties</label>
+              <div class="filters__actions">
+                <button id="clearBtn" class="btn btn--ghost" type="button">Wissen</button>
+              </div>
+              <div class="muted small">
+                Tip: kies eerst een hoofdcategorie, daarna subcategorieën (mag ook uit meerdere hoofdcategorieën).
+              </div>
+            </div>
           </div>
 
-          <div class="map-tools" role="search">
-            <label class="sr-only" for="searchInput">Zoeken</label>
-            <input id="searchInput" class="input" type="search" placeholder="Zoek op naam, plaats of categorie…" autocomplete="off" />
+          <div class="filters__grid" id="filtersGrid" aria-label="Filter op categorieën en subcategorieën">
+            <!-- wordt gevuld door script.js -->
+          </div>
 
-            <label class="sr-only" for="categoryFilter">Filter op categorie</label>
-            <select id="categoryFilter" class="select">
-              <option value="">Alle categorieën</option>
-            </select>
-
-            <button id="clearBtn" class="btn btn--ghost" type="button">Wissen</button>
+          <div class="selected" aria-label="Geselecteerde filters">
+            <div class="selected__head">
+              <strong>Geselecteerd</strong>
+              <span id="selectedCount" class="badge">0</span>
+            </div>
+            <div id="selectedChips" class="selected__chips"></div>
           </div>
         </div>
 
