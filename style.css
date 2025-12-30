@@ -863,3 +863,11 @@ h3{ margin: 0 0 10px; font-size: 18px; }
     min-height: 320px !important;
   }
 }
+
+@media (max-width: 520px){
+  .nav__btn{
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
