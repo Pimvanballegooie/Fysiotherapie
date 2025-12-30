@@ -128,7 +128,7 @@ function mainTag(mainKey) { return `main:${mainKey}`; }
 function subTag(mainKey, subKey) { return `sub:${mainKey}/${subKey}`; }
 
 // =============================
-// 2) Locaties met therapeuten (NIEUW MODEL)
+// 2) Locaties met therapeuten (voorbeelddata)
 // =============================
 const LOCATIONS = [
   {
@@ -137,6 +137,8 @@ const LOCATIONS = [
     name: "Monné Zorg & Beweging – Belcrum",
     address: "Industriekade 10",
     city: "Breda",
+    phone: "076 5810491",
+    email: "info@monne-zorgenbeweging.nl",
     website: "https://www.monne.nl/",
     lat: 51.5909,
     lng: 4.7793,
@@ -144,6 +146,8 @@ const LOCATIONS = [
       {
         id: "pim",
         name: "Pim van Ballegooie",
+        phone: "076 5810491",
+        email: "info@monne-zorgenbeweging.nl",
         tags: [
           subTag("benen", "knie-onderbeen"),
           subTag("wervelkolom", "lage-rug-bekken"),
@@ -153,6 +157,8 @@ const LOCATIONS = [
       {
         id: "pjotr",
         name: "Pjotr Goossens",
+        phone: "076 5810491",
+        email: "info@monne-zorgenbeweging.nl",
         tags: [
           subTag("armen", "schouder-bovenarm"),
           subTag("expertises", "dry-needling"),
@@ -162,6 +168,8 @@ const LOCATIONS = [
       {
         id: "joost",
         name: "Joost van Broekhoven",
+        phone: "076 5810491",
+        email: "info@monne-zorgenbeweging.nl",
         tags: [
           subTag("geriatrie", "valpreventie"),
           subTag("chronische-zorg", "chron-pijn"),
@@ -176,6 +184,8 @@ const LOCATIONS = [
     name: "Monné Zorg & Beweging – Oosterhout",
     address: "Merijntje Gijzenstraat 3e",
     city: "Oosterhout",
+    phone: "076 5810491",
+    email: "info@monne-zorgenbeweging.nl",
     website: "https://www.monne.nl/",
     lat: 51.6448,
     lng: 4.8573,
@@ -183,6 +193,8 @@ const LOCATIONS = [
       {
         id: "joeri",
         name: "Joeri van Dongen",
+        phone: "076 5810491",
+        email: "info@monne-zorgenbeweging.nl",
         tags: [
           subTag("benen", "heup-bovenbeen"),
           subTag("geriatrie", "parkinson"),
@@ -225,12 +237,10 @@ function getMain(mainKey){
 }
 
 function getSub(mainKey, subKey){
-  const m = getMain(mainKey);
-  return m?.subs?.find(s => s.key === subKey);
+  return getMain(mainKey)?.subs?.find(s => s.key === subKey);
 }
 
 function tagToMeta(tag){
-  // returns {mainKey, subKey, color, letter, label}
   if(tag.startsWith("sub:")){
     const raw = tag.replace("sub:", "");
     const [mainKey, subKey] = raw.split("/");
@@ -249,7 +259,7 @@ function tagToMeta(tag){
 }
 
 // =============================
-// 4) State (filters)
+// 4) State
 // =============================
 const state = {
   q: "",
@@ -265,7 +275,7 @@ function selectedAllTags(){
 }
 
 // =============================
-// 5) Filters UI (zelfde als eerder)
+// 5) Filters UI
 // =============================
 function renderFilters(){
   const host = $("#filtersGrid");
@@ -386,12 +396,12 @@ function renderSelectedChips(){
 
   host.innerHTML = chips.length
     ? chips.map(c => `
-      <span class="chip">
-        <span class="dot" style="background:${c.color}"></span>
-        ${escapeHtml(c.label)}
-        <button type="button" data-remove="${escapeHtml(c.key)}" aria-label="Verwijderen">×</button>
-      </span>
-    `).join("")
+        <span class="chip">
+          <span class="dot" style="background:${c.color}"></span>
+          ${escapeHtml(c.label)}
+          <button type="button" data-remove="${escapeHtml(c.key)}" aria-label="Verwijderen">×</button>
+        </span>
+      `).join("")
     : `<span class="muted small">Nog geen selectie gemaakt.</span>`;
 
   host.querySelectorAll("[data-remove]").forEach(btn => {
@@ -432,7 +442,7 @@ function initSearch(){
 }
 
 // =============================
-// 6) Filtering op THERAPEUT niveau
+// 6) Filtering op therapeutniveau (AND)
 // =============================
 function therapistMatches(therapist, requiredTags){
   const ttags = new Set(therapist.tags || []);
@@ -467,21 +477,16 @@ function filterLocationsTherapistLevel(){
   const results = [];
 
   for(const loc of LOCATIONS){
-    if(!locationTextMatches(loc, query)) continue;
+    const locTextOk = locationTextMatches(loc, query);
 
     const matches = [];
     for(const th of (loc.therapists || [])){
-      // ook op therapeutnaam zoeken
-      const thNameMatch = !query || normalize(th.name).includes(normalize(query));
-      if(!thNameMatch && query) {
-        // als de query niet in therapienaam zit, maar wel in locatie, blijft hij nog mee doen
-        // en dan filteren we puur op tags; daarom géén continue
-      }
+      const thNameOk = !query || normalize(th.name).includes(normalize(query));
+      if(!locTextOk && !thNameOk) continue;
 
       if(required.length){
         if(therapistMatches(th, required)) matches.push(th);
       } else {
-        // geen selectie: toon alle therapeuten (of je kunt hier beperken)
         matches.push(th);
       }
     }
@@ -494,7 +499,7 @@ function filterLocationsTherapistLevel(){
   return results;
 }
 
-// Letters op marker: letters van geselecteerde subfilters (zoals eerder), anders max 2 letters uit eerste matchende therapeuten
+// Marker letters: letters van geselecteerde filters; anders fallback uit eerste matchende therapeut
 function getSelectedLettersForMarker(){
   const letters = [];
 
@@ -513,7 +518,6 @@ function getSelectedLettersForMarker(){
 }
 
 function lettersFromTherapists(therapists){
-  // Pak max 2 sub-tags uit de eerste therapeut als fallback
   const letters = [];
   for(const th of therapists){
     const subTags = (th.tags || []).filter(t => t.startsWith("sub:"));
@@ -522,7 +526,6 @@ function lettersFromTherapists(therapists){
       if(meta) letters.push({ letter: meta.letter, color: meta.color });
       if(letters.length >= 2) return letters;
     }
-    if(letters.length >= 2) return letters;
   }
   return letters;
 }
@@ -576,14 +579,26 @@ function therapistLettersHtml(therapist){
 }
 
 function makePopup(loc, matchedTherapists){
-  const people = matchedTherapists.map(th => `
-    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(15,23,42,.10);">
-      <strong>${escapeHtml(th.name)}</strong>
-      <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-        ${therapistLettersHtml(th)}
+  const locPhone = loc.phone ? `<div>Tel: <a href="tel:${escapeHtml(loc.phone)}">${escapeHtml(loc.phone)}</a></div>` : "";
+  const locEmail = loc.email ? `<div>E-mail: <a href="mailto:${escapeHtml(loc.email)}">${escapeHtml(loc.email)}</a></div>` : "";
+
+  const people = matchedTherapists.map(th => {
+    const thPhone = th.phone ? `<div>Tel: <a href="tel:${escapeHtml(th.phone)}">${escapeHtml(th.phone)}</a></div>` : "";
+    const thEmail = th.email ? `<div>E-mail: <a href="mailto:${escapeHtml(th.email)}">${escapeHtml(th.email)}</a></div>` : "";
+
+    return `
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(15,23,42,.12);">
+        <strong>${escapeHtml(th.name)}</strong>
+        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+          ${therapistLettersHtml(th)}
+        </div>
+        <div style="margin-top:6px; font-size:14px;">
+          ${thPhone}
+          ${thEmail}
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 
   const website = loc.website
     ? `<div style="margin-top:12px;"><a href="${escapeHtml(loc.website)}" target="_blank" rel="noopener">Website</a></div>`
@@ -593,6 +608,10 @@ function makePopup(loc, matchedTherapists){
     <div style="min-width:260px;">
       <strong>${escapeHtml(loc.name)}</strong><br/>
       <span>${escapeHtml(loc.address)}, ${escapeHtml(loc.city)}</span>
+      <div style="margin-top:8px; font-size:14px;">
+        ${locPhone}
+        ${locEmail}
+      </div>
       ${people}
       ${website}
     </div>
@@ -622,7 +641,7 @@ function renderMarkers(results){
 }
 
 // =============================
-// 8) Sidebar lijst: locatie + matchende therapeuten
+// 8) Sidebar lijst: locatie + matchende therapeuten + contact
 // =============================
 function renderList(results){
   const host = $("#locationList");
@@ -636,20 +655,27 @@ function renderList(results){
   host.innerHTML = results.map(r => {
     const loc = r.location;
 
-    const therapistRows = r.therapists.map(th => {
-      const letters = selectedLetters.length
-        ? selectedLetters
-        : lettersFromTherapists([th]);
+    const locPhone = loc.phone ? `Tel: <a href="tel:${escapeHtml(loc.phone)}">${escapeHtml(loc.phone)}</a>` : "";
+    const locEmail = loc.email ? `E-mail: <a href="mailto:${escapeHtml(loc.email)}">${escapeHtml(loc.email)}</a>` : "";
 
+    const therapistRows = r.therapists.map(th => {
+      const thPhone = th.phone ? `Tel: <a href="tel:${escapeHtml(th.phone)}">${escapeHtml(th.phone)}</a>` : "";
+      const thEmail = th.email ? `E-mail: <a href="mailto:${escapeHtml(th.email)}">${escapeHtml(th.email)}</a>` : "";
+
+      const letters = selectedLetters.length ? selectedLetters : lettersFromTherapists([th]);
       const letterHtml = letters.map(l =>
         `<span class="letter-pill" style="background:${l.color}">${escapeHtml(l.letter)}</span>`
       ).join("");
 
       return `
-        <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(15,23,42,.10);">
-          <div style="display:flex; justify-content:space-between; gap:10px;">
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(15,23,42,.12);">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
             <strong>${escapeHtml(th.name)}</strong>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">${letterHtml}</div>
+          </div>
+          <div style="margin-top:6px; font-size:14px; color:#0f172a;">
+            <div>${thPhone}</div>
+            <div>${thEmail}</div>
           </div>
         </div>
       `;
@@ -665,6 +691,10 @@ function renderList(results){
           <div>
             <p class="item__name">${escapeHtml(loc.name)}</p>
             <p class="item__meta">${escapeHtml(loc.address)}, ${escapeHtml(loc.city)}</p>
+            <div style="margin-top:6px; font-size:14px;">
+              <div>${locPhone}</div>
+              <div>${locEmail}</div>
+            </div>
           </div>
           <button class="btn btn--ghost" type="button" data-zoom="${escapeHtml(loc.id)}">Zoom</button>
         </div>
@@ -689,7 +719,7 @@ function renderList(results){
 }
 
 // =============================
-// 9) Nav + render
+// 9) Nav + init
 // =============================
 function initNav(){
   $$(".nav__btn[data-scroll]").forEach(btn => {
@@ -707,7 +737,9 @@ function renderMapAndList(){
 }
 
 function init(){
-  $("#year").textContent = String(new Date().getFullYear());
+  const yearEl = $("#year");
+  if(yearEl) yearEl.textContent = String(new Date().getFullYear());
+
   initNav();
   initSearch();
   renderFilters();
