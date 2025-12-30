@@ -573,3 +573,124 @@ h3{ margin: 0 0 10px; font-size: 18px; }
   .how-step__number{ width: 44px; height: 44px; font-size: 18px; }
   .how-step__text{ font-size: 16px; }
 }
+
+/* =========================
+   Zo werkt het – fancy versie
+========================= */
+
+.how-fancy{
+  position: relative;
+  padding: 32px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    #f8fafc,
+    #eef4fa
+  );
+  border: 1px solid rgba(31,78,121,.2);
+  box-shadow: var(--shadow);
+}
+
+.how-fancy__header{
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.how-fancy__header h2{
+  margin: 0;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+/* Gebogen pijl */
+.how-arrow{
+  position: absolute;
+  left: 0;
+  top: 36px;
+  width: 220px;
+  max-width: 100%;
+}
+
+/* Stappen */
+.how-fancy__steps{
+  display: grid;
+  gap: 16px;
+}
+
+.how-card{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.how-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(2,6,23,.12);
+}
+
+.how-card--highlight{
+  border-color: rgba(76,175,80,.6);
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f2fbf4
+  );
+}
+
+/* Cirkels */
+.how-circle{
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    #4CAF50
+  );
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Tekst */
+.how-text{
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.how-text span{
+  display: block;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* Mobiel */
+@media (max-width: 520px){
+  .how-arrow{
+    display: none; /* pijl verbergen op mobiel */
+  }
+
+  .how-fancy{
+    padding: 22px;
+  }
+
+  .how-fancy__header h2{
+    font-size: 24px;
+  }
+
+  .how-text{
+    font-size: 16px;
+  }
+}
+
