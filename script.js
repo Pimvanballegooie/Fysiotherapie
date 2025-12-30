@@ -214,6 +214,7 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 function scrollToId(id){
   const el = document.querySelector(id);
   if(!el) return;
+
   const topbarH = document.querySelector(".topbar")?.offsetHeight ?? 0;
   const y = el.getBoundingClientRect().top + window.scrollY - (topbarH + 10);
   window.scrollTo({ top: y, behavior: "smooth" });
@@ -277,6 +278,45 @@ function selectedAllTags(){
 // =============================
 // 5) Filters UI
 // =============================
+function onFilterChange(e){
+  const input = e.target;
+  if(!(input instanceof HTMLInputElement)) return;
+
+  const type = input.getAttribute("data-type");
+  const mainKey = input.getAttribute("data-main");
+  if(!type || !mainKey) return;
+
+  if(type === "main"){
+    const t = mainTag(mainKey);
+    if(input.checked) state.selectedMain.add(t);
+    else state.selectedMain.delete(t);
+
+    const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
+    if(subs){
+      const shouldOpen = input.checked || Array.from(state.selectedSubs).some(x => x.startsWith(`sub:${mainKey}/`));
+      subs.classList.toggle("subs--open", shouldOpen);
+    }
+  }
+
+  if(type === "sub"){
+    const subKey = input.getAttribute("data-sub");
+    if(!subKey) return;
+    const t = subTag(mainKey, subKey);
+    if(input.checked) state.selectedSubs.add(t);
+    else state.selectedSubs.delete(t);
+
+    const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
+    if(subs){
+      const mainChecked = state.selectedMain.has(mainTag(mainKey));
+      const anySub = Array.from(state.selectedSubs).some(x => x.startsWith(`sub:${mainKey}/`));
+      subs.classList.toggle("subs--open", mainChecked || anySub);
+    }
+  }
+
+  renderSelectedChips();
+  renderMapAndList();
+}
+
 function renderFilters(){
   const host = $("#filtersGrid");
   if(!host) return;
@@ -334,46 +374,11 @@ function renderFilters(){
     `;
   }).join("");
 
-  host.addEventListener("change", onFilterChange);
-}
-
-function onFilterChange(e){
-  const input = e.target;
-  if(!(input instanceof HTMLInputElement)) return;
-
-  const type = input.getAttribute("data-type");
-  const mainKey = input.getAttribute("data-main");
-  if(!type || !mainKey) return;
-
-  if(type === "main"){
-    const t = mainTag(mainKey);
-    if(input.checked) state.selectedMain.add(t);
-    else state.selectedMain.delete(t);
-
-    const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
-    if(subs){
-      const shouldOpen = input.checked || Array.from(state.selectedSubs).some(x => x.startsWith(`sub:${mainKey}/`));
-      subs.classList.toggle("subs--open", shouldOpen);
-    }
+  // Belangrijk: geen listeners stapelen
+  if(!host.dataset.bound){
+    host.addEventListener("change", onFilterChange);
+    host.dataset.bound = "1";
   }
-
-  if(type === "sub"){
-    const subKey = input.getAttribute("data-sub");
-    if(!subKey) return;
-    const t = subTag(mainKey, subKey);
-    if(input.checked) state.selectedSubs.add(t);
-    else state.selectedSubs.delete(t);
-
-    const subs = document.querySelector(`.subs[data-subs="${CSS.escape(mainKey)}"]`);
-    if(subs){
-      const mainChecked = state.selectedMain.has(mainTag(mainKey));
-      const anySub = Array.from(state.selectedSubs).some(x => x.startsWith(`sub:${mainKey}/`));
-      subs.classList.toggle("subs--open", mainChecked || anySub);
-    }
-  }
-
-  renderSelectedChips();
-  renderMapAndList();
 }
 
 function renderSelectedChips(){
@@ -437,6 +442,7 @@ function initSearch(){
       renderFilters();
       renderSelectedChips();
       renderMapAndList();
+      forceLeafletResize();
     });
   }
 }
@@ -471,7 +477,7 @@ function locationTextMatches(loc, query){
 }
 
 function filterLocationsTherapistLevel(){
-  const required = selectedAllTags(); // AND
+  const required = selectedAllTags();
   const query = state.q;
 
   const results = [];
@@ -499,7 +505,6 @@ function filterLocationsTherapistLevel(){
   return results;
 }
 
-// Marker letters: letters van geselecteerde filters; anders fallback uit eerste matchende therapeut
 function getSelectedLettersForMarker(){
   const letters = [];
 
@@ -550,11 +555,20 @@ function createLetterIcon(letters){
   });
 }
 
+// Force leaflet to recalc size on mobile + after scroll/layout changes
+function forceLeafletResize(){
+  if(!window.map) return;
+  setTimeout(() => window.map.invalidateSize(true), 50);
+  setTimeout(() => window.map.invalidateSize(true), 250);
+  setTimeout(() => window.map.invalidateSize(true), 600);
+}
+
 function initMap(){
   const el = $("#leafletMap");
   if(!el || typeof L === "undefined") return;
 
   map = L.map("leafletMap", { scrollWheelZoom: false });
+  window.map = map;
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap-bijdragers"
@@ -564,6 +578,7 @@ function initMap(){
   map.setView([51.60, 4.78], 11);
 
   renderMapAndList();
+  forceLeafletResize();
 }
 
 function therapistLettersHtml(therapist){
@@ -714,6 +729,7 @@ function renderList(results){
       const loc = LOCATIONS.find(x => x.id === id);
       if(!loc || !map) return;
       map.setView([loc.lat, loc.lng], 14, { animate: true });
+      forceLeafletResize();
     });
   });
 }
@@ -726,6 +742,11 @@ function initNav(){
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-scroll");
       if(target) scrollToId(target);
+
+      // belangrijk: als je naar de map scrollt, daarna Leaflet laten herberekenen
+      if(target === "#map"){
+        setTimeout(forceLeafletResize, 350);
+      }
     });
   });
 }
@@ -734,6 +755,7 @@ function renderMapAndList(){
   const results = filterLocationsTherapistLevel();
   renderList(results);
   if(map) renderMarkers(results);
+  forceLeafletResize();
 }
 
 function init(){
@@ -746,6 +768,18 @@ function init(){
   renderSelectedChips();
   initMap();
   renderMapAndList();
+
+  // Mobile: fix bij resize/orientation
+  window.addEventListener("resize", forceLeafletResize);
+  window.addEventListener("orientationchange", forceLeafletResize);
+
+  // Ook bij terugkomen uit background/tab op mobiel
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) forceLeafletResize();
+  });
+
+  // Na initial load nog een keer forceren
+  setTimeout(forceLeafletResize, 800);
 }
 
 document.addEventListener("DOMContentLoaded", init);
